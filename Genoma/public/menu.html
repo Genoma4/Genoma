@@ -1,0 +1,102 @@
+<!-- public/menu.html -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Menu Principal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 1rem;
+      background: #222;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      width: 80%;
+      max-width: 1000px;
+      margin-top: 2rem;
+    }
+
+    .menu button, .auth-btn {
+      padding: 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .menu button:hover, .auth-btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Menu Principal</h2>
+    <button class="auth-btn" id="authButton">...</button>
+  </header>
+
+  <div class="menu">
+    <button onclick="goTo('paises')">Países</button>
+    <button onclick="goTo('empresas')">Empresas</button>
+    <button onclick="goTo('perfis')">Perfis</button>
+    <button onclick="goTo('utilizadores')">Utilizadores</button>
+    <button onclick="goTo('comerciais')">Comerciais</button>
+    <button onclick="goTo('tipos-kit')">Tipos de Kit</button>
+    <button onclick="goTo('testes')">Testes</button>
+    <button onclick="goTo('entidades')">Entidades</button>
+    <button onclick="goTo('medicos')">Médicos</button>
+    <button onclick="goTo('sistemas-saude')">Sistemas de Saúde</button>
+    <button onclick="goTo('motivos-anulacao')">Motivos de Anulação</button>
+    <button onclick="goTo('sms-semanais')">SMS Semanais</button>
+    <button onclick="goTo('contactos')">Contactos</button>
+    <button onclick="goTo('processos')">Processos</button>
+    <button onclick="goTo('lotes')">Lotes</button>
+    <button onclick="goTo('requisicoes')">Requisições</button>
+  </div>
+
+  <script>
+    function goTo(section) {
+      alert(`Abrir página: ${section}`);
+      // window.location.href = `/${section}.html`
+    }
+
+    // Lógica de login/logout
+    const authBtn = document.getElementById('authButton');
+    const userId = localStorage.getItem('userId'); // Ou o que usares para guardar login
+
+    if (userId) {
+      authBtn.textContent = 'Logout';
+      authBtn.onclick = () => {
+        localStorage.removeItem('userId');
+        window.location.href = 'login.html';
+      }
+    } else {
+      authBtn.textContent = 'Login';
+      authBtn.onclick = () => {
+        window.location.href = 'login.html';
+      }
+    }
+  </script>
+</body>
+</html>
