@@ -66,7 +66,7 @@
 
   <script>
     const loginForm = document.getElementById('loginForm')
-
+  
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault()
       const formData = new FormData(loginForm)
@@ -74,16 +74,23 @@
         username: formData.get('username'),
         password: formData.get('password')
       }
-
+  
       const res = await fetch('http://localhost:3000/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       })
-
+  
       const data = await res.json()
-      alert(data.message || data.error)
+  
+      if (res.ok) {
+        localStorage.setItem('userId', data.user.idutilizador);
+        alert(data.message)
+        window.location.href = '/menu.html'
+      } else {
+        alert(data.error || 'Erro no login')
+      }
     })
-  </script>
+  </script>  
 </body>
 </html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Médicos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    input[type="text"] {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 200px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 6px;
+      overflow: auto;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lista de Médicos</h1>
+
+  <div class="actions">
+    <input type="text" id="pesquisaInput" placeholder="Pesquisar médico...">
+    <div>
+      <button onclick="carregarMedicos()">Atualizar</button>
+      <button onclick="window.location.href='adicionarmedico.html'">Adicionar Médico</button>
+    </div>
+  </div>
+
+  <table id="medicosTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Título</th>
+        <th>Nº Cédula</th>
+        <th>Telemóvel</th>
+        <th>Email</th>
+        <th>Género</th>
+        <th>Contacto 1</th>
+        <th>Contacto 2</th>
+        <th>Contacto 3</th>
+        <th>Notas</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const tbody = document.querySelector('#medicosTable tbody');
+    const pesquisaInput = document.getElementById('pesquisaInput');
+
+    async function carregarMedicos() {
+      try {
+        const res = await fetch('http://localhost:3000/medicos');
+        const data = await res.json();
+        console.log('Médicos recebidos:', data);
+
+        mostrarMedicos(data);
+
+        pesquisaInput.addEventListener('input', () => {
+          const termo = pesquisaInput.value.toLowerCase();
+          const filtrados = data.filter(m =>
+            m.nome?.toLowerCase().includes(termo) ||
+            m.titulo?.toLowerCase().includes(termo) ||
+            m.email?.toLowerCase().includes(termo)
+          );
+          mostrarMedicos(filtrados);
+        });
+      } catch (err) {
+        alert('Erro ao carregar médicos');
+        console.error(err);
+      }
+    }
+
+    function mostrarMedicos(medicos) {
+      tbody.innerHTML = '';
+      medicos.forEach(m => {
+        const genero = m.genero === 1 ? 'Feminino' : 'Masculino';
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${m.idmedico}</td>
+          <td>${m.nome || ''}</td>
+          <td>${m.titulo || ''}</td>
+          <td>${m.numcedula || ''}</td>
+          <td>${m.telemovel || ''}</td>
+          <td>${m.email || ''}</td>
+          <td>${genero}</td>
+          <td>
+            ${m.contacto1nome || ''} - ${m.contacto1funcao || ''} (${m.contactotelefones || ''})
+          </td>
+          <td>
+            ${m.contacto2nome || ''} - ${m.contacto2funcao || ''} (${m.contacto2telefone || ''})
+          </td>
+          <td>
+            ${m.contacto3nome || ''} - ${m.contacto3funcao || ''} (${m.contacto3telefone || ''})
+          </td>
+          <td>${m.notas || ''}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    carregarMedicos();
+  </script>
+</body>
+</html>

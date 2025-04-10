@@ -3,6 +3,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
 import dotenv from 'dotenv'
+import medicosRoutes from './routes/medicos.js'
 
 dotenv.config()
 
@@ -25,3 +26,5 @@ app.use('/auth', authRoutes)
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`)
 })
+
+app.use('/medicos', medicosRoutes)

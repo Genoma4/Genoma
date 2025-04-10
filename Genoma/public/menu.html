@@ -52,7 +52,7 @@
 </head>
 <body>
   <header>
-    <h2>Menu Principal</h2>
+    <h2>Genoma</h2>
     <button class="auth-btn" id="authButton">...</button>
   </header>
 
@@ -65,25 +65,22 @@
     <button onclick="goTo('tipos-kit')">Tipos de Kit</button>
     <button onclick="goTo('testes')">Testes</button>
     <button onclick="goTo('entidades')">Entidades</button>
-    <button onclick="goTo('medicos')">Médicos</button>
+    <button onclick="window.location.href='medicos.html'">Médicos</button>
     <button onclick="goTo('sistemas-saude')">Sistemas de Saúde</button>
     <button onclick="goTo('motivos-anulacao')">Motivos de Anulação</button>
     <button onclick="goTo('sms-semanais')">SMS Semanais</button>
     <button onclick="goTo('contactos')">Contactos</button>
     <button onclick="goTo('processos')">Processos</button>
     <button onclick="goTo('lotes')">Lotes</button>
-    <button onclick="goTo('requisicoes')">Requisições</button>
   </div>
 
   <script>
     function goTo(section) {
       alert(`Abrir página: ${section}`);
-      // window.location.href = `/${section}.html`
     }
 
-    // Lógica de login/logout
     const authBtn = document.getElementById('authButton');
-    const userId = localStorage.getItem('userId'); // Ou o que usares para guardar login
+    const userId = localStorage.getItem('userId');
 
     if (userId) {
       authBtn.textContent = 'Logout';

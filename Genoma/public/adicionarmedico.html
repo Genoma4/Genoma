@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Adicionar Médico</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 800px;
+      margin: 0 auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <h1>Adicionar Médico</h1>
+
+  <form id="formMedico">
+    <label>Nome: <input type="text" name="nome" required></label>
+    <label>Título: <input type="text" name="titulo"></label>
+    <label>Número da Cédula: <input type="text" name="numcedula"></label>
+    <label>Telefone: <input type="text" name="telefone"></label>
+    <label>Telemóvel: <input type="text" name="telemovel"></label>
+    <label>Email: <input type="email" name="email"></label>
+    <label>Género:
+      <select name="genero">
+        <option value="0">Masculino</option>
+        <option value="1">Feminino</option>
+      </select>
+    </label>
+
+    <hr>
+
+    <label>Contacto 1 - Nome: <input type="text" name="contacto1nome"></label>
+    <label>Contacto 1 - Função: <input type="text" name="contacto1funcao"></label>
+    <label>Contacto 1 - Telefone: <input type="text" name="contactotelefone"></label>
+
+    <label>Contacto 2 - Nome: <input type="text" name="contacto2nome"></label>
+    <label>Contacto 2 - Função: <input type="text" name="contacto2funcao"></label>
+    <label>Contacto 2 - Telefone: <input type="text" name="contacto2telefone"></label>
+
+    <label>Contacto 3 - Nome: <input type="text" name="contacto3nome"></label>
+    <label>Contacto 3 - Função: <input type="text" name="contacto3funcao"></label>
+    <label>Contacto 3 - Telefone: <input type="text" name="contacto3telefone"></label>
+
+    <label>Notas: <textarea name="notas"></textarea></label>
+
+    <div class="actions">
+      <button type="button" onclick="window.location.href='medicos.html'">Voltar</button>
+      <button type="submit">Guardar Médico</button>
+    </div>
+  </form>
+
+  <script>
+    const form = document.getElementById('formMedico');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const medico = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch('http://localhost:3000/medicos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(medico)
+        });
+
+        if (!res.ok) throw new Error('Erro ao adicionar médico');
+
+        alert('Médico adicionado com sucesso!');
+        window.location.href = 'medicos.html';
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao guardar médico.');
+      }
+    });
+  </script>
+</body>
+</html>
