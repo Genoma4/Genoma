@@ -78,7 +78,7 @@
 
     <label>Contacto 1 - Nome: <input type="text" name="contacto1nome"></label>
     <label>Contacto 1 - Função: <input type="text" name="contacto1funcao"></label>
-    <label>Contacto 1 - Telefone: <input type="text" name="contactotelefone"></label>
+    <label>Contacto 1 - Telefone: <input type="text" name="contacto1telefone"></label>
 
     <label>Contacto 2 - Nome: <input type="text" name="contacto2nome"></label>
     <label>Contacto 2 - Função: <input type="text" name="contacto2funcao"></label>
@@ -89,6 +89,22 @@
     <label>Contacto 3 - Telefone: <input type="text" name="contacto3telefone"></label>
 
     <label>Notas: <textarea name="notas"></textarea></label>
+
+    <hr>
+    <h3>Opções de Relatórios</h3>
+
+    <label>
+      <input type="checkbox" name="relatoriomedicoemail" /> Enviar relatório ao médico por email
+    </label>
+    <label>
+      <input type="checkbox" name="relatoriomedicocarta" /> Enviar relatório ao médico por carta
+    </label>
+    <label>
+      <input type="checkbox" name="relatorioclienteemail" /> Enviar relatório ao cliente por email
+    </label>
+    <label>
+      <input type="checkbox" name="relatorioclientecarta" /> Enviar relatório ao cliente por carta
+    </label>
 
     <div class="actions">
       <button type="button" onclick="window.location.href='medicos.html'">Voltar</button>
@@ -101,8 +117,40 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
       const formData = new FormData(form);
-      const medico = Object.fromEntries(formData.entries());
+      const raw = Object.fromEntries(formData.entries());
+
+      // Converte checkboxes em boolean
+      const medico = {
+  nome: formData.get('nome'),
+  titulo: formData.get('titulo'),
+  numcedula: formData.get('numcedula'),
+  telefone: formData.get('telefone'),
+  telemovel: formData.get('telemovel'),
+  email: formData.get('email'),
+  genero: parseInt(formData.get('genero')),
+
+  contacto1nome: formData.get('contacto1nome'),
+  contacto1funcao: formData.get('contacto1funcao'),
+  contacto1telefone: formData.get('contacto1telefone'),
+
+  contacto2nome: formData.get('contacto2nome'),
+  contacto2funcao: formData.get('contacto2funcao'),
+  contacto2telefone: formData.get('contacto2telefone'),
+
+  contacto3nome: formData.get('contacto3nome'),
+  contacto3funcao: formData.get('contacto3funcao'),
+  contacto3telefone: formData.get('contacto3telefone'),
+
+  notas: formData.get('notas'),
+
+  // Conversão real para boolean
+  relatoriomedicoemail: formData.has('relatoriomedicoemail'),
+  relatoriomedicocarta: formData.has('relatoriomedicocarta'),
+  relatorioclienteemail: formData.has('relatorioclienteemail'),
+  relatorioclientecarta: formData.has('relatorioclientecarta')
+};
 
       try {
         const res = await fetch('http://localhost:3000/medicos', {
@@ -111,7 +159,20 @@
           body: JSON.stringify(medico)
         });
 
-        if (!res.ok) throw new Error('Erro ao adicionar médico');
+        const contentType = res.headers.get('content-type');
+        let data;
+
+        if (contentType && contentType.includes('application/json')) {
+          data = await res.json();
+        } else {
+          const text = await res.text();
+          console.error('Resposta inesperada:', text);
+          throw new Error('Resposta inválida do servidor');
+        }
+
+        console.log('Resposta da API:', data);
+
+        if (!res.ok) throw new Error(data.error || 'Erro ao adicionar médico');
 
         alert('Médico adicionado com sucesso!');
         window.location.href = 'medicos.html';
