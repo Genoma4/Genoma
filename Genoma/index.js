@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
 import dotenv from 'dotenv'
 import medicosRoutes from './routes/medicos.js'
+import paisesRoutes from './routes/paisesRoutes.js';
 
 dotenv.config()
 
@@ -28,3 +29,5 @@ app.listen(PORT, () => {
 })
 
 app.use('/medicos', medicosRoutes)
+
+app.use('/paises', paisesRoutes);

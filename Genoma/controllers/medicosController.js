@@ -1,7 +1,9 @@
 import supabase from '../supabaseClient.js'
 
-// Função utilitária para converter checkboxes em booleanos
-const toBool = (val) => val === true || val === 'true' || val === 'on' || val === 1 || val === '1';
+// Helper para converter valores para booleanos (bit)
+function toBool(val) {
+  return val === true || val === 'true' || val === 'on' || val === 1 || val === '1'
+}
 
 // Listar todos os médicos
 export async function listarMedicos(req, res) {
@@ -15,7 +17,7 @@ export async function listarMedicos(req, res) {
   res.json(data)
 }
 
-// Adicionar novo médico (com todos os campos do form)
+// Adicionar novo médico
 export async function adicionarMedico(req, res) {
   const {
     titulo,
@@ -38,48 +40,51 @@ export async function adicionarMedico(req, res) {
     relatoriomedicoemail,
     relatoriomedicocarta,
     relatorioclienteemail,
-    relatorioclientecarta
-  } = req.body;
-
-  const medico = {
-    titulo,
-    nome,
-    numcedula,
-    telefone,
-    telemovel,
-    email,
-    genero: parseInt(genero),
-    contacto1nome,
-    contacto1funcao,
-    contacto1telefone,
-    contacto2nome,
-    contacto2funcao,
-    contacto2telefone,
-    contacto3nome,
-    contacto3funcao,
-    contacto3telefone,
-    notas,
-    idcomercial: 7,
-    idpais: 1,
-    relatoriomedicoemail: toBool(relatoriomedicoemail),
-    relatoriomedicocarta: toBool(relatoriomedicocarta),
-    relatorioclienteemail: toBool(relatorioclienteemail),
-    relatorioclientecarta: toBool(relatorioclientecarta)
-  };
+    relatorioclientecarta,
+    relatoriocontacto1email,
+    relatoriocontacto2email,
+    relatoriocontacto3email,
+    relatoriomedicosms
+  } = req.body
 
   const { data, error } = await supabase
     .from('medicos')
-    .insert([medico])
-    .select();
+    .insert([{
+      titulo,
+      nome,
+      numcedula,
+      telefone,
+      telemovel,
+      email,
+      genero: parseInt(genero),
+      contacto1nome,
+      contacto1funcao,
+      contacto1telefone,
+      contacto2nome,
+      contacto2funcao,
+      contacto2telefone,
+      contacto3nome,
+      contacto3funcao,
+      contacto3telefone,
+      notas,
+      relatoriomedicoemail: toBool(relatoriomedicoemail),
+      relatoriomedicocarta: toBool(relatoriomedicocarta),
+      relatorioclienteemail: toBool(relatorioclienteemail),
+      relatorioclientecarta: toBool(relatorioclientecarta),
+      relatoriocontacto1email: toBool(relatoriocontacto1email),
+      relatoriocontacto2email: toBool(relatoriocontacto2email),
+      relatoriocontacto3email: toBool(relatoriocontacto3email),
+      relatoriomedicosms: toBool(relatoriomedicosms),
+      idcomercial: 7,
+      idpais: 620,
+      idutilizador: 1
+    }])
+    .select()
 
-  if (error) {
-    console.error('Erro ao adicionar médico:', error.message);
-    return res.status(400).json({ error: error.message });
-  }
+  if (error) return res.status(400).json({ error: error.message })
 
-  res.status(201).json(data[0]);
+  res.status(201).json(data[0])
 }
-
 
 // Eliminar médico por ID
 export async function eliminarMedico(req, res) {
@@ -90,10 +95,7 @@ export async function eliminarMedico(req, res) {
     .delete()
     .eq('idmedico', id)
 
-  if (error) {
-    console.error('Erro ao eliminar médico:', error.message)
-    return res.status(400).json({ error: error.message })
-  }
+  if (error) return res.status(400).json({ error: error.message })
 
   res.json({ message: 'Médico eliminado com sucesso' })
 }

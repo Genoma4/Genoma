@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Países</title>
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #6c757d;
+      font-size: 2.5em;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: #6c757d;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+    }
+
+    /* Tabela */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    thead {
+      background-color: #007bff;
+      color: white;
+      font-size: 1.1em;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    /* Formulário de adicionar país */
+    form {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    input {
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      table {
+        font-size: 0.9em;
+      }
+
+      form {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Gestão de Países</h1>
+  <table id="tabelaPaises" border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome PT</th>
+        <th>Indicativo Telefónico</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Adicionar País</h2>
+  <form id="formAdicionarPais">
+    <input type="text" name="nomept" placeholder="Nome (PT)" required />
+    <input type="text" name="indicativotelefonico" placeholder="Indicativo" required />
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <script>
+    async function carregarPaises() {
+      const res = await fetch('/paises');
+      const paises = await res.json();
+      const tbody = document.querySelector('#tabelaPaises tbody');
+      tbody.innerHTML = '';
+      paises.forEach(pais => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${pais.idpais}</td>
+            <td>${pais.nomept}</td>
+            <td>${pais.indicativotelefonico}</td>
+          </tr>`;
+      });
+    }
+
+    document.getElementById('formAdicionarPais').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const dados = {
+        nomept: form.nomept.value,
+        indicativotelefonico: parseInt(form.indicativotelefonico.value)
+      };
+      const res = await fetch('/paises', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+      if (res.ok) {
+        form.reset();
+        carregarPaises();
+      } else {
+        alert('Erro ao adicionar país');
+      }
+    });
+
+    carregarPaises();
+  </script>
+</body>
+</html>

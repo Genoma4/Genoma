@@ -89,11 +89,6 @@
         <th>Nº Cédula</th>
         <th>Telemóvel</th>
         <th>Email</th>
-        <th>Género</th>
-        <th>Contacto 1</th>
-        <th>Contacto 2</th>
-        <th>Contacto 3</th>
-        <th>Notas</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -138,17 +133,6 @@
           <td>${m.numcedula || ''}</td>
           <td>${m.telemovel || ''}</td>
           <td>${m.email || ''}</td>
-          <td>${genero}</td>
-          <td>
-            ${m.contacto1nome || ''} - ${m.contacto1funcao || ''} (${m.contactotelefones || ''})
-          </td>
-          <td>
-            ${m.contacto2nome || ''} - ${m.contacto2funcao || ''} (${m.contacto2telefone || ''})
-          </td>
-          <td>
-            ${m.contacto3nome || ''} - ${m.contacto3funcao || ''} (${m.contacto3telefone || ''})
-          </td>
-          <td>${m.notas || ''}</td>
         `;
         tbody.appendChild(row);
       });

@@ -74,6 +74,11 @@
       </select>
     </label>
 
+    <label for="idpais">País:</label>
+    <select name="idpais" id="idpais" required>
+      <option value="">Selecione um país</option>
+    </select>
+
     <hr>
 
     <label>Contacto 1 - Nome: <input type="text" name="contacto1nome"></label>
@@ -93,18 +98,16 @@
     <hr>
     <h3>Opções de Relatórios</h3>
 
-    <label>
-      <input type="checkbox" name="relatoriomedicoemail" /> Enviar relatório ao médico por email
-    </label>
-    <label>
-      <input type="checkbox" name="relatoriomedicocarta" /> Enviar relatório ao médico por carta
-    </label>
-    <label>
-      <input type="checkbox" name="relatorioclienteemail" /> Enviar relatório ao cliente por email
-    </label>
-    <label>
-      <input type="checkbox" name="relatorioclientecarta" /> Enviar relatório ao cliente por carta
-    </label>
+    <label><input type="checkbox" name="relatoriomedicoemail" /> Enviar relatório ao médico por email</label>
+    <label><input type="checkbox" name="relatoriomedicocarta" /> Enviar relatório ao médico por carta</label>
+    <label><input type="checkbox" name="relatorioclienteemail" /> Enviar relatório ao cliente por email</label>
+    <label><input type="checkbox" name="relatorioclientecarta" /> Enviar relatório ao cliente por carta</label>
+
+    <!-- Campos obrigatórios mas invisíveis -->
+    <input type="hidden" name="relatoriocontacto1email" value="false">
+    <input type="hidden" name="relatoriocontacto2email" value="false">
+    <input type="hidden" name="relatoriocontacto3email" value="false">
+    <input type="hidden" name="relatoriomedicosms" value="false">
 
     <div class="actions">
       <button type="button" onclick="window.location.href='medicos.html'">Voltar</button>
@@ -113,44 +116,62 @@
   </form>
 
   <script>
+    async function carregarPaises() {
+      try {
+        const res = await fetch('http://localhost:3000/paises');
+        const paises = await res.json();
+        const select = document.getElementById('idpais');
+
+        paises.forEach(pais => {
+          const option = document.createElement('option');
+          option.value = pais.idpais;
+          option.textContent = `${pais.nomept} (+${pais.indicativotelefonico})`;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        console.error('Erro ao carregar países:', err);
+      }
+    }
+
     const form = document.getElementById('formMedico');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const formData = new FormData(form);
-      const raw = Object.fromEntries(formData.entries());
-
-      // Converte checkboxes em boolean
       const medico = {
-  nome: formData.get('nome'),
-  titulo: formData.get('titulo'),
-  numcedula: formData.get('numcedula'),
-  telefone: formData.get('telefone'),
-  telemovel: formData.get('telemovel'),
-  email: formData.get('email'),
-  genero: parseInt(formData.get('genero')),
+        nome: formData.get('nome'),
+        titulo: formData.get('titulo'),
+        numcedula: formData.get('numcedula'),
+        telefone: formData.get('telefone'),
+        telemovel: formData.get('telemovel'),
+        email: formData.get('email'),
+        genero: parseInt(formData.get('genero')),
+        idpais: parseInt(formData.get('idpais')),
 
-  contacto1nome: formData.get('contacto1nome'),
-  contacto1funcao: formData.get('contacto1funcao'),
-  contacto1telefone: formData.get('contacto1telefone'),
+        contacto1nome: formData.get('contacto1nome'),
+        contacto1funcao: formData.get('contacto1funcao'),
+        contacto1telefone: formData.get('contacto1telefone'),
 
-  contacto2nome: formData.get('contacto2nome'),
-  contacto2funcao: formData.get('contacto2funcao'),
-  contacto2telefone: formData.get('contacto2telefone'),
+        contacto2nome: formData.get('contacto2nome'),
+        contacto2funcao: formData.get('contacto2funcao'),
+        contacto2telefone: formData.get('contacto2telefone'),
 
-  contacto3nome: formData.get('contacto3nome'),
-  contacto3funcao: formData.get('contacto3funcao'),
-  contacto3telefone: formData.get('contacto3telefone'),
+        contacto3nome: formData.get('contacto3nome'),
+        contacto3funcao: formData.get('contacto3funcao'),
+        contacto3telefone: formData.get('contacto3telefone'),
 
-  notas: formData.get('notas'),
+        notas: formData.get('notas'),
 
-  // Conversão real para boolean
-  relatoriomedicoemail: formData.has('relatoriomedicoemail'),
-  relatoriomedicocarta: formData.has('relatoriomedicocarta'),
-  relatorioclienteemail: formData.has('relatorioclienteemail'),
-  relatorioclientecarta: formData.has('relatorioclientecarta')
-};
+        relatoriomedicoemail: formData.has('relatoriomedicoemail'),
+        relatoriomedicocarta: formData.has('relatoriomedicocarta'),
+        relatorioclienteemail: formData.has('relatorioclienteemail'),
+        relatorioclientecarta: formData.has('relatorioclientecarta'),
+
+        relatoriocontacto1email: false,
+        relatoriocontacto2email: false,
+        relatoriocontacto3email: false,
+        relatoriomedicosms: false
+      };
 
       try {
         const res = await fetch('http://localhost:3000/medicos', {
@@ -159,18 +180,7 @@
           body: JSON.stringify(medico)
         });
 
-        const contentType = res.headers.get('content-type');
-        let data;
-
-        if (contentType && contentType.includes('application/json')) {
-          data = await res.json();
-        } else {
-          const text = await res.text();
-          console.error('Resposta inesperada:', text);
-          throw new Error('Resposta inválida do servidor');
-        }
-
-        console.log('Resposta da API:', data);
+        const data = await res.json();
 
         if (!res.ok) throw new Error(data.error || 'Erro ao adicionar médico');
 
@@ -178,9 +188,11 @@
         window.location.href = 'medicos.html';
       } catch (err) {
         console.error(err);
-        alert('Erro ao guardar médico.');
+        alert('Erro ao guardar médico: ' + err.message);
       }
     });
+
+    carregarPaises();
   </script>
 </body>
 </html>
