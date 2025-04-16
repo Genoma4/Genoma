@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Editar País</title>
+</head>
+<body>
+  <h1>Editar País</h1>
+  <form id="formEditarPais">
+    <input type="text" name="nomept" placeholder="Nome (PT)" required />
+    <input type="text" name="nomeen" placeholder="Nome (EN)" />
+    <input type="text" name="nomeit" placeholder="Nome (IT)" />
+    <input type="number" name="indicativotelefonico" placeholder="Indicativo Telefónico" required />
+    <button type="submit">Guardar Alterações</button>
+    <button type="button" onclick="eliminarPais()">Eliminar País</button>
+    <button type="button" onclick="window.location.href='paises.html'">Voltar</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('formEditarPais');
+    const id = new URLSearchParams(window.location.search).get('id');
+
+    async function carregarDados() {
+      const res = await fetch(`/paises/${id}`);
+      const pais = await res.json();
+      form.nomept.value = pais.nomept;
+      form.nomeen.value = pais.nomeen || '';
+      form.nomeit.value = pais.nomeit || '';
+      form.indicativotelefonico.value = pais.indicativotelefonico;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const dados = {
+        nomept: form.nomept.value,
+        nomeen: form.nomeen.value,
+        nomeit: form.nomeit.value,
+        indicativotelefonico: parseInt(form.indicativotelefonico.value)
+      };
+
+      const res = await fetch(`/paises/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+
+      if (res.ok) {
+        alert('País atualizado com sucesso!');
+        window.location.href = 'paises.html';
+      } else {
+        alert('Erro ao atualizar país');
+      }
+    });
+
+    async function eliminarPais() {
+      if (confirm('Tens a certeza que queres eliminar este país?')) {
+        const res = await fetch(`/paises/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (res.ok) {
+          alert('País eliminado com sucesso!');
+          window.location.href = 'paises.html';
+        } else {
+          alert('Erro ao eliminar país');
+        }
+      }
+    }
+
+    carregarDados();
+  </script>
+</body>
+</html>

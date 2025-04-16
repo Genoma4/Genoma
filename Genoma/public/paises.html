@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestão de Países</title>
   <style>
-    /* Reset básico */
     * {
       margin: 0;
       padding: 0;
@@ -32,7 +31,6 @@
       margin-bottom: 20px;
     }
 
-    /* Tabela */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -56,7 +54,6 @@
       background-color: #f2f2f2;
     }
 
-    /* Formulário de adicionar país */
     form {
       background-color: #ffffff;
       padding: 20px;
@@ -97,7 +94,6 @@
       background-color: #218838;
     }
 
-    /* Responsividade */
     @media (max-width: 768px) {
       table {
         font-size: 0.9em;
@@ -111,12 +107,16 @@
 </head>
 <body>
   <h1>Gestão de Países</h1>
+
   <table id="tabelaPaises" border="1">
     <thead>
       <tr>
         <th>ID</th>
         <th>Nome PT</th>
+        <th>Nome EN</th>
+        <th>Nome IT</th>
         <th>Indicativo Telefónico</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -125,7 +125,9 @@
   <h2>Adicionar País</h2>
   <form id="formAdicionarPais">
     <input type="text" name="nomept" placeholder="Nome (PT)" required />
-    <input type="text" name="indicativotelefonico" placeholder="Indicativo" required />
+    <input type="text" name="nomeen" placeholder="Nome (EN)" />
+    <input type="text" name="nomeit" placeholder="Nome (IT)" />
+    <input type="text" name="indicativotelefonico" placeholder="Indicativo Telefónico" required />
     <button type="submit">Adicionar</button>
   </form>
 
@@ -140,30 +142,42 @@
           <tr>
             <td>${pais.idpais}</td>
             <td>${pais.nomept}</td>
+            <td>${pais.nomeen}</td>
+            <td>${pais.nomeit}</td>
             <td>${pais.indicativotelefonico}</td>
+            <td>
+              <button onclick="window.location.href='editarpais.html?id=${pais.idpais}'">Editar</button>
+            </td>
           </tr>`;
       });
     }
 
-    document.getElementById('formAdicionarPais').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const dados = {
-        nomept: form.nomept.value,
-        indicativotelefonico: parseInt(form.indicativotelefonico.value)
-      };
-      const res = await fetch('/paises', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dados)
-      });
-      if (res.ok) {
-        form.reset();
-        carregarPaises();
-      } else {
-        alert('Erro ao adicionar país');
-      }
-    });
+document.getElementById('formAdicionarPais').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+
+  const dados = {
+    nomept: form.nomept.value,
+    nomeen: form.nomeen.value,
+    nomeit: form.nomeit.value,
+    indicativotelefonico: parseInt(form.indicativotelefonico.value),
+    reservadosistema: false // invisível mas necessário
+  };
+
+  const res = await fetch('/paises', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados)
+  });
+
+  if (res.ok) {
+    form.reset();
+    carregarPaises();
+  } else {
+    const erro = await res.text();
+    alert('Erro ao adicionar país:\n' + erro);
+  }
+});
 
     carregarPaises();
   </script>
