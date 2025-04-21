@@ -7,6 +7,7 @@ import medicosRoutes from './routes/medicos.js'
 import paisesRoutes from './routes/paisesRoutes.js';
 import empresasRoutes from './routes/empresasRoutes.js';
 import idiomasRoutes from './routes/idiomasRoutes.js';
+import comerciaisRoutes from './routes/comerciais.js';
 
 dotenv.config()
 
@@ -34,3 +35,4 @@ app.use('/medicos', medicosRoutes)
 app.use('/paises', paisesRoutes);
 app.use('/empresas', empresasRoutes);
 app.use('/api/idiomas', idiomasRoutes);
+app.use('/comerciais', comerciaisRoutes);

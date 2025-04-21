@@ -89,6 +89,7 @@
         <th>Nº Cédula</th>
         <th>Telemóvel</th>
         <th>Email</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -97,15 +98,15 @@
   <script>
     const tbody = document.querySelector('#medicosTable tbody');
     const pesquisaInput = document.getElementById('pesquisaInput');
-
+  
     async function carregarMedicos() {
       try {
         const res = await fetch('http://localhost:3000/medicos');
         const data = await res.json();
         console.log('Médicos recebidos:', data);
-
+  
         mostrarMedicos(data);
-
+  
         pesquisaInput.addEventListener('input', () => {
           const termo = pesquisaInput.value.toLowerCase();
           const filtrados = data.filter(m =>
@@ -120,11 +121,10 @@
         console.error(err);
       }
     }
-
+  
     function mostrarMedicos(medicos) {
       tbody.innerHTML = '';
       medicos.forEach(m => {
-        const genero = m.genero === 1 ? 'Feminino' : 'Masculino';
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${m.idmedico}</td>
@@ -133,11 +133,36 @@
           <td>${m.numcedula || ''}</td>
           <td>${m.telemovel || ''}</td>
           <td>${m.email || ''}</td>
+          <td>
+            <button onclick="editarMedico(${m.idmedico})">Editar</button>
+            <button onclick="removerMedico(${m.idmedico})" style="background:#dc3545;">Eliminar</button>
+          </td>
         `;
         tbody.appendChild(row);
       });
     }
-
+  
+    function editarMedico(id) {
+      window.location.href = `adicionarmedico.html?id=${id}`;
+    }
+  
+    async function removerMedico(id) {
+      if (!confirm('Tem a certeza que deseja eliminar este médico?')) return;
+  
+      try {
+        const res = await fetch(`http://localhost:3000/medicos/${id}`, {
+          method: 'DELETE'
+        });
+  
+        if (!res.ok) throw new Error('Falha ao eliminar médico');
+  
+        carregarMedicos();
+      } catch (err) {
+        alert('Erro ao eliminar médico');
+        console.error(err);
+      }
+    }
+  
     carregarMedicos();
   </script>
 </body>

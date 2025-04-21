@@ -44,7 +44,9 @@ export async function adicionarMedico(req, res) {
     relatoriocontacto1email,
     relatoriocontacto2email,
     relatoriocontacto3email,
-    relatoriomedicosms
+    relatoriomedicosms,
+    idpais,
+    idcomercial
   } = req.body
 
   const { data, error } = await supabase
@@ -75,8 +77,8 @@ export async function adicionarMedico(req, res) {
       relatoriocontacto2email: toBool(relatoriocontacto2email),
       relatoriocontacto3email: toBool(relatoriocontacto3email),
       relatoriomedicosms: toBool(relatoriomedicosms),
-      idcomercial: 7,
-      idpais: 620,
+      idpais: parseInt(idpais),
+      idcomercial: parseInt(idcomercial),
       idutilizador: 1
     }])
     .select()

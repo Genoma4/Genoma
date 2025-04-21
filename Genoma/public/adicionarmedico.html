@@ -73,10 +73,13 @@
         <option value="1">Feminino</option>
       </select>
     </label>
-
     <label for="idpais">País:</label>
     <select name="idpais" id="idpais" required>
       <option value="">Selecione um país</option>
+    </select>
+    <label for="idcomercial">Comercial:</label>
+    <select name="idcomercial" id="idcomercial" required>
+      <option value="">Selecione um comercial</option>
     </select>
 
     <hr>
@@ -121,7 +124,7 @@
         const res = await fetch('http://localhost:3000/paises');
         const paises = await res.json();
         const select = document.getElementById('idpais');
-
+  
         paises.forEach(pais => {
           const option = document.createElement('option');
           option.value = pais.idpais;
@@ -132,9 +135,28 @@
         console.error('Erro ao carregar países:', err);
       }
     }
-
+  
+    async function carregarComerciais() {
+      try {
+        const res = await fetch('http://localhost:3000/comerciais');
+        const comerciais = await res.json();
+        const select = document.getElementById('idcomercial');
+  
+        comerciais.forEach(c => {
+          const option = document.createElement('option');
+          option.value = c.idcomercial;
+          option.textContent = c.nome;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        console.error('Erro ao carregar comerciais:', err);
+      }
+    }
+  
     const form = document.getElementById('formMedico');
-
+    const params = new URLSearchParams(window.location.search);
+    const idmedico = params.get('id');
+  
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
@@ -147,52 +169,84 @@
         email: formData.get('email'),
         genero: parseInt(formData.get('genero')),
         idpais: parseInt(formData.get('idpais')),
-
+        idcomercial: parseInt(formData.get('idcomercial')),
+  
         contacto1nome: formData.get('contacto1nome'),
         contacto1funcao: formData.get('contacto1funcao'),
         contacto1telefone: formData.get('contacto1telefone'),
-
+  
         contacto2nome: formData.get('contacto2nome'),
         contacto2funcao: formData.get('contacto2funcao'),
         contacto2telefone: formData.get('contacto2telefone'),
-
+  
         contacto3nome: formData.get('contacto3nome'),
         contacto3funcao: formData.get('contacto3funcao'),
         contacto3telefone: formData.get('contacto3telefone'),
-
+  
         notas: formData.get('notas'),
-
+  
         relatoriomedicoemail: formData.has('relatoriomedicoemail'),
         relatoriomedicocarta: formData.has('relatoriomedicocarta'),
         relatorioclienteemail: formData.has('relatorioclienteemail'),
         relatorioclientecarta: formData.has('relatorioclientecarta'),
-
+  
         relatoriocontacto1email: false,
         relatoriocontacto2email: false,
         relatoriocontacto3email: false,
         relatoriomedicosms: false
       };
-
+  
       try {
-        const res = await fetch('http://localhost:3000/medicos', {
-          method: 'POST',
+        const url = idmedico
+          ? `http://localhost:3000/medicos/${idmedico}`
+          : `http://localhost:3000/medicos`;
+  
+        const method = idmedico ? 'PUT' : 'POST';
+  
+        const res = await fetch(url, {
+          method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(medico)
         });
-
+  
         const data = await res.json();
-
-        if (!res.ok) throw new Error(data.error || 'Erro ao adicionar médico');
-
-        alert('Médico adicionado com sucesso!');
+  
+        if (!res.ok) throw new Error(data.error || 'Erro ao guardar médico');
+  
+        alert(`Médico ${idmedico ? 'atualizado' : 'adicionado'} com sucesso!`);
         window.location.href = 'medicos.html';
       } catch (err) {
         console.error(err);
         alert('Erro ao guardar médico: ' + err.message);
       }
     });
-
-    carregarPaises();
+  
+    async function carregarMedicoParaEdicao() {
+      if (!idmedico) return;
+  
+      try {
+        const res = await fetch(`http://localhost:3000/medicos/${idmedico}`);
+        const medico = await res.json();
+  
+        for (const [key, value] of Object.entries(medico)) {
+          if (form[key]) {
+            if (form[key].type === 'checkbox') {
+              form[key].checked = value === true || value === '1';
+            } else {
+              form[key].value = value;
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao carregar médico para edição:', err);
+      }
+    }
+  
+    (async () => {
+      await carregarPaises();
+      await carregarComerciais();
+      await carregarMedicoParaEdicao();
+    })();
   </script>
 </body>
 </html>
