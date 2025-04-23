@@ -119,29 +119,32 @@
     }
 
     form.onsubmit = async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(form));
-      data.idpais = parseInt(data.idpais);
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form));
+  data.idpais = parseInt(data.idpais);
 
-      const method = data.idsistemasaude ? 'PUT' : 'POST';
-      const url = data.idsistemasaude ? `/sistemasaude/${data.idsistemasaude}` : '/sistemasaude';
+  if (!data.idsistemasaude) {
+    delete data.idsistemasaude;
+  }
 
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+  const method = data.idsistemasaude ? 'PUT' : 'POST';
+  const url = data.idsistemasaude ? `/sistemasaude/${data.idsistemasaude}` : '/sistemasaude';
 
-      if (!res.ok) {
-        const erro = await res.json();
-        alert('Erro: ' + JSON.stringify(erro));
-        return;
-      }
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
 
-      form.reset();
-      carregarSistemas();
-    }
+  if (!res.ok) {
+    const erro = await res.json();
+    alert('Erro: ' + JSON.stringify(erro));
+    return;
+  }
 
+  form.reset();
+  carregarSistemas();
+};
     window.onload = async () => {
       await carregarPaises();
       await carregarSistemas();
