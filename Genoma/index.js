@@ -10,6 +10,8 @@ import idiomasRoutes from './routes/idiomasRoutes.js'
 import comerciaisRoutes from './routes/comerciais.js'
 import sistemasaudeRoutes from './routes/sistemasaudeRoutes.js'
 import entidadesRoutes from './routes/entidadesRoutes.js'
+import testesRoutes from './routes/testesRoutes.js'
+import tipostesteRoutes from './routes/tipostesteRoutes.js'
 
 dotenv.config()
 
@@ -40,3 +42,5 @@ app.use('/api/idiomas', idiomasRoutes)
 app.use('/comerciais', comerciaisRoutes)
 app.use('/sistemasaude', sistemasaudeRoutes)
 app.use('/entidades', entidadesRoutes)
+app.use('/api/testes', testesRoutes)
+app.use('/tiposteste', tipostesteRoutes)
