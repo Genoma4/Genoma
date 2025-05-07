@@ -39,7 +39,7 @@ export const listarTiposTeste = async (req, res) => {
   }
 }
 
-export const obterTestePorId = async (req, res) => {
+export const listarTestePorId = async (req, res) => {
   const { id } = req.params
 
   try {
@@ -49,22 +49,21 @@ export const obterTestePorId = async (req, res) => {
       .eq('idteste', id)
       .single()
 
-    if (error) throw error
-
+    if (error || !data) throw error
     res.json(data)
   } catch (err) {
-    console.error(err)
+    console.error('Erro ao buscar teste:', err)
     res.status(500).json({ erro: 'Erro ao buscar teste' })
   }
 }
 
 export const criarTeste = async (req, res) => {
   try {
-    const { nome, precocompra, idtipoteste, temporresposta, tempominimogestacao } = req.body
+    const dataInserir = { ...req.body }
 
     const { data, error } = await supabase
       .from('testes')
-      .insert([{ nome, precocompra, idtipoteste, temporresposta, tempominimogestacao }])
+      .insert([dataInserir])
       .select()
       .single()
 
@@ -72,19 +71,19 @@ export const criarTeste = async (req, res) => {
 
     res.status(201).json(data)
   } catch (err) {
-    console.error(err)
+    console.error('Erro ao criar teste:', err)
     res.status(500).json({ erro: 'Erro ao criar teste' })
   }
 }
 
 export const atualizarTeste = async (req, res) => {
   const { id } = req.params
-  const { nome, precocompra, idtipoteste, temporresposta, tempominimogestacao } = req.body
+  const dataAtualizar = { ...req.body }
 
   try {
     const { data, error } = await supabase
       .from('testes')
-      .update({ nome, precocompra, idtipoteste, temporresposta, tempominimogestacao })
+      .update(dataAtualizar)
       .eq('idteste', id)
       .select()
       .single()
@@ -93,7 +92,7 @@ export const atualizarTeste = async (req, res) => {
 
     res.json(data)
   } catch (err) {
-    console.error(err)
+    console.error('Erro ao atualizar teste:', err)
     res.status(500).json({ erro: 'Erro ao atualizar teste' })
   }
 }

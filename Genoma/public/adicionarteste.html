@@ -8,7 +8,7 @@
 </head>
 <body class="container py-4">
   <div class="position-absolute top-0 start-0 m-3">
-    <button class="btn btn-outline-secondary" onclick="window.history.back()">← Voltar</button>
+    <button class="btn btn-outline-secondary" onclick="window.location.href='testes.html'">&larr; Voltar</button>
   </div>
 
   <h1 class="text-center mb-4">Adicionar / Editar Teste</h1>
@@ -17,8 +17,8 @@
     <input type="hidden" id="idteste" name="idteste" />
 
     <div class="mb-3">
-      <label for="descricao" class="form-label">Nome</label>
-      <input type="text" id="descricao" name="descricao" class="form-control" required />
+      <label for="nome" class="form-label">Nome</label>
+      <input type="text" id="nome" name="nome" class="form-control" required />
     </div>
 
     <div class="mb-3">
@@ -43,6 +43,22 @@
       <input type="number" id="temporesposta" name="temporesposta" class="form-control" />
     </div>
 
+    <!-- Campos opcionais -->
+    <div class="mb-3"><label for="parametrocromossomassexuais" class="form-label">Cromossomos Sexuais</label><input type="number" id="parametrocromossomassexuais" name="parametrocromossomassexuais" class="form-control" /></div>
+    <div class="mb-3"><label for="parametropresencay" class="form-label">Presença Y</label><input type="number" id="parametropresencay" name="parametropresencay" class="form-control" /></div>
+    <div class="mb-3"><label for="parametroresultadosexuais" class="form-label">Resultado Sexo</label><input type="number" id="parametroresultadosexuais" name="parametroresultadosexuais" class="form-control" /></div>
+    <div class="mb-3"><label for="parametrodeleccao22q112" class="form-label">Deleção 22q11.2</label><input type="number" id="parametrodeleccao22q112" name="parametrodeleccao22q112" class="form-control" /></div>
+    <div class="mb-3"><label for="parametrodeleccao15q112" class="form-label">Deleção 15q11.2</label><input type="number" id="parametrodeleccao15q112" name="parametrodeleccao15q112" class="form-control" /></div>
+    <div class="mb-3"><label for="parametrodeleccao11q23 class="form-label">Deleção 1q23</label><input type="number" id="parametrodeleccao11q23" name="parametrodeleccao11q23" class="form-control" /></div>
+    <div class="mb-3"><label for="parametrodeleccao8q24" class="form-label">Deleção 8q24</label><input type="number" id="parametrodeleccao8q24" name="parametrodeleccao8q24" class="form-control" /></div>
+    <div class="mb-3"><label for="parametrodeleccao5pcri" class="form-label">Deleção 5pCri</label><input type="number" id="parametrodeleccao5pcri" name="parametrodeleccao5pcri" class="form-control" /></div>
+    <div class="mb-3"><label for="parametrodeleccao4pwolf" class="form-label">Deleção 4pWolf</label><input type="number" id="parametrodeleccao4pwolf" name="parametrodeleccao4pwolf" class="form-control" /></div>
+    <div class="mb-3"><label for="parametrodeleccao1p36" class="form-label">Deleção 1p36</label><input type="number" id="parametrodeleccao1p36" name="parametrodeleccao1p36" class="form-control" /></div>
+    <div class="mb-3"><label for="parametroganhosperdas7mb" class="form-label">Ganho/Perda 7mb</label><input type="number" id="parametroganhosperdas7mb" name="parametroganhosperdas7mb" class="form-control" /></div>
+    <div class="mb-3"><label for="parametrofraccaofetal" class="form-label">Fração Fetal</label><input type="number" id="parametrofraccaofetal" name="parametrofraccaofetal" class="form-control" /></div>
+    <div class="mb-3"><label for="permitegemeos" class="form-label">Permite Gémeos</label><input type="number" id="permitegemeos" name="permitegemeos" class="form-control" /></div>
+    <div class="mb-3"><label for="reservadosistema" class="form-label">Reservado Sistema</label><input type="number" id="reservadosistema" name="reservadosistema" class="form-control" /></div>
+
     <button type="submit" class="btn btn-primary">Guardar</button>
     <button type="reset" class="btn btn-secondary">Limpar</button>
   </form>
@@ -52,9 +68,8 @@
 
     async function carregarTiposTeste() {
       try {
-        const res = await fetch('/tiposteste');
+        const res = await fetch('/api/testes/tipos');
         const tipos = await res.json();
-
         const select = document.getElementById('idtipoteste');
         select.innerHTML = '<option value="">-- Selecione um tipo --</option>';
         tipos.forEach(t => {
@@ -64,8 +79,7 @@
           select.appendChild(option);
         });
       } catch (err) {
-        console.error('Erro ao carregar tipos de teste:', err);
-        alert('Erro ao carregar tipos de teste');
+        alert('Erro ao carregar tipos de teste: ' + err.message);
       }
     }
 
@@ -75,49 +89,48 @@
       if (!id) return;
 
       try {
-        const res = await fetch(`/testes/${id}`);
-        if (!res.ok) throw new Error('Erro ao buscar teste');
-
+        const res = await fetch(`/api/testes/${id}`);
         const t = await res.json();
-        form.idteste.value = t.idteste;
-        form.nome.value = t.nome || '';
-        form.precocompra.value = t.precocompra || '';
-        form.idtipoteste.value = t.idtipoteste || '';
-        form.tempominimogestacao.value = t.tempominimogestacao || '';
-        form.temporesposta.value = t.temporesposta || '';
+        for (const key in t) {
+          if (form[key]) form[key].value = t[key];
+        }
       } catch (err) {
-        console.error('Erro ao carregar teste para edição:', err);
-        alert('Erro ao carregar dados do teste');
+        alert('Erro ao carregar dados do teste: ' + err.message);
       }
     }
 
     form.onsubmit = async (e) => {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(form));
-      data.precocompra = parseFloat(data.precocompra);
-      data.tempominimogestacao = parseInt(data.tempominimogestacao) || null;
-      data.temporesposta = parseInt(data.temporesposta) || null;
 
-      const method = data.idteste ? 'PUT' : 'POST';
-      const url = data.idteste ? `/testes/${data.idteste}` : '/testes';
-
-      if (!data.idteste) delete data.idteste;
-
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      if (!res.ok) {
-        const erro = await res.json();
-        alert('Erro: ' + JSON.stringify(erro));
-        return;
+      // Convert fields to proper types
+      for (const key in data) {
+        if (data[key] === '') delete data[key];
+        else if (!isNaN(data[key])) data[key] = parseFloat(data[key]);
       }
 
-      alert('Teste guardado com sucesso!');
-      form.reset();
-      window.location.href = '/menu.html'; // ou outra página desejada
+      const method = data.idteste ? 'PUT' : 'POST';
+      const url = data.idteste ? `/api/testes/${data.idteste}` : '/api/testes';
+      if (!data.idteste) delete data.idteste;
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!res.ok) {
+          const erro = await res.json();
+          alert('Erro: ' + JSON.stringify(erro));
+          return;
+        }
+
+        alert('Teste guardado com sucesso!');
+        window.location.href = '/testes.html';
+      } catch (err) {
+        alert('Erro inesperado: ' + err.message);
+      }
     };
 
     window.onload = async () => {
