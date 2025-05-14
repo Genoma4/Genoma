@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestão de Tipos de Kit</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+</head>
+<body class="container py-4">
+  <div class="position-absolute top-0 start-0 m-3">
+    <button class="btn btn-outline-secondary" onclick="window.history.back()">← Voltar</button>
+  </div>
+
+  <h1 class="text-center mb-4">Gestão de Tipos de Kit</h1>
+
+  <!-- Formulário -->
+  <form id="formTipoKit" class="mb-4">
+    <input type="hidden" id="idtipokit" name="idtipokit" />
+
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Nome (PT)</label>
+        <input type="text" name="nomept" class="form-control" required />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Nome (EN)</label>
+        <input type="text" name="nomeen" class="form-control" required />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Nome (IT)</label>
+        <input type="text" name="nomeit" class="form-control" required />
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Tipo de Teste</label>
+        <select name="idtipoteste" id="idtipoteste" class="form-select" required>
+          <option value="">-- Selecione --</option>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Idioma</label>
+        <select name="ididioma" id="ididioma" class="form-select" required>
+          <option value="">-- Selecione --</option>
+        </select>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Comando Etiqueta Simples</label>
+        <input type="text" name="comandosetiquetasimples" class="form-control" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Comando Etiqueta Data de Nascimento</label>
+        <input type="text" name="comandosetiquetadatanascimento" class="form-control" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Comando Etiqueta Lote</label>
+        <input type="text" name="comandosetiquetalote" class="form-control" />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Comando Etiqueta Tubo</label>
+        <input type="text" name="comandosetiquetatubo" class="form-control" />
+      </div>
+
+      <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="reset" class="btn btn-secondary">Limpar</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Lista -->
+  <h3 class="mb-3">Tipos de Kit Existentes</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nome (PT)</th>
+        <th>Tipo de Teste</th>
+        <th>Idioma</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tipokit-tbody"></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('formTipoKit');
+    const tbody = document.getElementById('tipokit-tbody');
+
+    let tiposTeste = [];
+    let idiomas = [];
+
+    async function carregarTiposTeste() {
+      const res = await fetch('/api/testes');
+      tiposTeste = await res.json();
+
+      const select = document.getElementById('idtipoteste');
+      select.innerHTML = '<option value="">-- Selecione --</option>';
+      tiposTeste.forEach(t => {
+        const option = document.createElement('option');
+        option.value = t.idtipoteste;
+        option.textContent = t.nome;
+        select.appendChild(option);
+      });
+    }
+
+    async function carregarIdiomas() {
+      const res = await fetch('/empresas/idiomas/lista');
+      idiomas = await res.json();
+
+      const select = document.getElementById('ididioma');
+      select.innerHTML = '<option value="">-- Selecione --</option>';
+      idiomas.forEach(i => {
+        const option = document.createElement('option');
+        option.value = i.ididioma;
+        option.textContent = i.nomelocal;
+        select.appendChild(option);
+});
+    }
+
+async function carregarTiposKit() {
+  const res = await fetch('/tipokit');
+
+  if (!res.ok) {
+    const erro = await res.text();
+    console.error('Erro ao carregar tipos de kit:', erro);
+    alert('Erro ao carregar tipos de kit');
+    return;
+  }
+
+  const kits = await res.json();
+  console.log('kits recebidos:', kits);
+
+  tbody.innerHTML = kits.map(kit => `
+    <tr>
+      <td>${kit.nomept}</td>
+      <td>${tiposTeste.find(t => t.idtipoteste === kit.idtipoteste)?.nome || '—'}</td>
+      <td>${idiomas.find(i => i.ididioma === kit.ididioma)?.nomelocal || '—'}</td>
+      <td>
+        <button class="btn btn-sm btn-warning" onclick='editarTipoKit(${JSON.stringify(kit).replace(/"/g, '&quot;')})'>Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarTipoKit(${kit.idtipokit})">Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+    function editarTipoKit(kit) {
+    form.idtipokit.value = kit.idtipokit;
+    form.nomept.value = kit.nomept;
+    form.nomeen.value = kit.nomeen;
+    form.nomeit.value = kit.nomeit;
+    form.idtipoteste.value = kit.idtipoteste;
+    form.ididioma.value = kit.ididioma;
+    form.comandosetiquetasimples.value = kit.comandosetiquetasimples || '';
+    form.comandosetiquetadatadenascimento.value = kit.comandosetiquetadatadenascimento || '';
+    form.comandosetiquetalatote.value = kit.comandosetiquetalatote || '';
+    form.comandosetiquetatubo.value = kit.comandosetiquetatubo || '';
+    }
+
+    async function eliminarTipoKit(id) {
+      if (!confirm('Tem a certeza que quer eliminar este tipo de kit?')) return;
+      const res = await fetch(`/tipokit/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        carregarTiposKit();
+      } else {
+        alert('Erro ao eliminar tipo de kit.');
+      }
+    }
+
+form.onsubmit = async (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form));
+
+  data.idtipoteste = parseInt(data.idtipoteste);
+  data.ididioma = parseInt(data.ididioma);
+
+  // ✅ Corrigir o problema do "editar sempre"
+  if (!data.idtipokit || data.idtipokit === '') {
+    delete data.idtipokit;
+  }
+
+  const method = data.idtipokit ? 'PUT' : 'POST';
+  const url = data.idtipokit ? `/tipokit/${data.idtipokit}` : '/tipokit';
+
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+
+  if (!res.ok) {
+    const erro = await res.json();
+    alert('Erro: ' + JSON.stringify(erro));
+    return;
+  }
+
+  // ✅ Limpar tudo corretamente
+  form.reset();
+  form.idtipokit.value = '';
+  await carregarTiposKit();
+};
+
+    window.onload = async () => {
+      await carregarTiposTeste();
+      await carregarIdiomas();
+      await carregarTiposKit();
+    };
+  </script>
+</body>
+</html>

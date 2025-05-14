@@ -2,9 +2,12 @@ import supabase from '../supabaseClient.js';
 
 export const obterIdiomas = async (req, res) => {
   try {
+    const lang = req.query.lang || 'pt';
+    const campoNome = `nom${lang}`;
+
     const { data, error } = await supabase
       .from('idiomas')
-      .select('ididioma, nomelocal:nom' + req.query.lang || 'pt');
+      .select(`ididioma, nomelocal:${campoNome}`);
 
     if (error) throw error;
 

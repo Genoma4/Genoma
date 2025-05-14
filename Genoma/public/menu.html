@@ -1,25 +1,18 @@
-<!-- public/menu.html -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
   <title>Menu Principal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background-color: #f8f9fa;
     }
 
     header {
-      width: 100%;
-      padding: 1rem;
-      background: #222;
-      color: #fff;
+      background-color: #343a40;
+      color: white;
+      padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -27,58 +20,49 @@
 
     .menu {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 1rem;
-      width: 80%;
+      padding: 2rem;
       max-width: 1000px;
-      margin-top: 2rem;
+      margin: 2rem auto;
     }
 
-    .menu button, .auth-btn {
-      padding: 1rem;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+    .menu .btn {
+      height: 100%;
       font-size: 1rem;
-      transition: background 0.3s ease;
     }
 
-    .menu button:hover, .auth-btn:hover {
-      background: #0056b3;
+    .btn-inactive {
+      pointer-events: none;
+      opacity: 0.6;
     }
   </style>
 </head>
 <body>
   <header>
-    <h2>Genoma</h2>
-    <button class="auth-btn" id="authButton">...</button>
+    <h2 class="m-0">Genoma</h2>
+    <button class="btn btn-outline-light" id="authButton">...</button>
   </header>
 
   <div class="menu">
-    <button onclick="window.location.href='paises.html'">Países</button>
-    <button onclick="window.location.href='empresas.html'">Empresas</button>
-    <button onclick="goTo('perfis')">Perfis</button>
-    <button onclick="goTo('utilizadores')">Utilizadores</button>
-    <button onclick="window.location.href='comerciais.html'">Comerciais</button>
-    <button onclick="goTo('tipos-kit')">Tipos de Kit</button>
-    <button onclick="window.location.href='testes.html'">Testes</button>
-    <button onclick="window.location.href='entidades.html'">Entidades</button>
-    <button onclick="window.location.href='medicos.html'">Médicos</button>
-    <button onclick="window.location.href='sistemasaude.html'">Sistema de Saúde</button>
-    <button onclick="goTo('motivos-anulacao')">Motivos de Anulação</button>
-    <button onclick="goTo('sms-semanais')">SMS Semanais</button>
-    <button onclick="goTo('contactos')">Contactos</button>
-    <button onclick="goTo('processos')">Processos</button>
-    <button onclick="goTo('lotes')">Lotes</button>
+    <a href="paises.html" class="btn btn-primary">Países</a>
+    <a href="empresas.html" class="btn btn-primary">Empresas</a>
+    <button class="btn btn-secondary btn-inactive">Perfis</button>
+    <button class="btn btn-secondary btn-inactive">Utilizadores</button>
+    <a href="comerciais.html" class="btn btn-primary">Comerciais</a>
+    <a href="tipokit.html" class="btn btn-primary">Tipos de Kit</a>
+    <a href="testes.html" class="btn btn-primary">Testes</a>
+    <a href="entidades.html" class="btn btn-primary">Entidades</a>
+    <a href="medicos.html" class="btn btn-primary">Médicos</a>
+    <a href="sistemasaude.html" class="btn btn-primary">Sistema de Saúde</a>
+    <button class="btn btn-secondary btn-inactive">Motivos de Anulação</button>
+    <button class="btn btn-secondary btn-inactive">SMS Semanais</button>
+    <button class="btn btn-secondary btn-inactive">Contactos</button>
+    <button class="btn btn-secondary btn-inactive">Processos</button>
+    <button class="btn btn-secondary btn-inactive">Lotes</button>
   </div>
 
   <script>
-    function goTo(section) {
-      alert(`Abrir página: ${section}`);
-    }
-
     const authBtn = document.getElementById('authButton');
     const userId = localStorage.getItem('userId');
 

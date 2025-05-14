@@ -12,6 +12,7 @@ import sistemasaudeRoutes from './routes/sistemasaudeRoutes.js'
 import entidadesRoutes from './routes/entidadesRoutes.js'
 import testesRoutes from './routes/testesRoutes.js'
 import tipostesteRoutes from './routes/tipostesteRoutes.js'
+import tipokitRoutes from './routes/tipokitRoutes.js';
 
 dotenv.config()
 
@@ -44,3 +45,4 @@ app.use('/sistemasaude', sistemasaudeRoutes)
 app.use('/entidades', entidadesRoutes)
 app.use('/api/testes', testesRoutes)
 app.use('/tiposteste', tipostesteRoutes)
+app.use('/tipokit', tipokitRoutes);
