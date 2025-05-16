@@ -91,15 +91,15 @@
     let idiomas = [];
 
     async function carregarTiposTeste() {
-      const res = await fetch('/api/testes');
+      const res = await fetch('/api/testes/tipos'); // <- nova rota já existente
       tiposTeste = await res.json();
 
       const select = document.getElementById('idtipoteste');
       select.innerHTML = '<option value="">-- Selecione --</option>';
       tiposTeste.forEach(t => {
         const option = document.createElement('option');
-        option.value = t.idtipoteste;
-        option.textContent = t.nome;
+        option.value = t.idtipoteste; // <- chave correta
+        option.textContent = t.nomept; // <- nome correto vindo de tiposteste
         select.appendChild(option);
       });
     }
@@ -118,15 +118,15 @@
 });
     }
 
-async function carregarTiposKit() {
-  const res = await fetch('/tipokit');
+      async function carregarTiposKit() {
+        const res = await fetch('/tipokit');
 
-  if (!res.ok) {
-    const erro = await res.text();
-    console.error('Erro ao carregar tipos de kit:', erro);
-    alert('Erro ao carregar tipos de kit');
-    return;
-  }
+        if (!res.ok) {
+          const erro = await res.text();
+          console.error('Erro ao carregar tipos de kit:', erro);
+          alert('Erro ao carregar tipos de kit');
+          return;
+        }
 
   const kits = await res.json();
   console.log('kits recebidos:', kits);
@@ -134,8 +134,7 @@ async function carregarTiposKit() {
   tbody.innerHTML = kits.map(kit => `
     <tr>
       <td>${kit.nomept}</td>
-      <td>${tiposTeste.find(t => t.idtipoteste === kit.idtipoteste)?.nome || '—'}</td>
-      <td>${idiomas.find(i => i.ididioma === kit.ididioma)?.nomelocal || '—'}</td>
+      <td>${tiposTeste.find(t => parseInt(t.idtipoteste) === parseInt(kit.idtipoteste))?.nomept || '—'}</td>      <td>${idiomas.find(i => i.ididioma === kit.ididioma)?.nomelocal || '—'}</td>
       <td>
         <button class="btn btn-sm btn-warning" onclick='editarTipoKit(${JSON.stringify(kit).replace(/"/g, '&quot;')})'>Editar</button>
         <button class="btn btn-sm btn-danger" onclick="eliminarTipoKit(${kit.idtipokit})">Eliminar</button>
