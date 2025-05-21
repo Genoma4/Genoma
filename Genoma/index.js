@@ -13,6 +13,9 @@ import entidadesRoutes from './routes/entidadesRoutes.js'
 import testesRoutes from './routes/testesRoutes.js'
 import tipostesteRoutes from './routes/tipostesteRoutes.js'
 import tipokitRoutes from './routes/tipokitRoutes.js';
+import lotesRoutes from './routes/lotesRoutes.js';
+import postosRoutes from './routes/postosRoutes.js';
+import motivosAnulacaoRoutes from './routes/motivosAnulacaoRoutes.js';
 
 dotenv.config()
 
@@ -46,3 +49,6 @@ app.use('/entidades', entidadesRoutes)
 app.use('/api/testes', testesRoutes)
 app.use('/tiposteste', tipostesteRoutes)
 app.use('/tipokit', tipokitRoutes);
+app.use('/lotes', lotesRoutes);
+app.use('/postos', postosRoutes);
+app.use('/motivos-anulacao', motivosAnulacaoRoutes);

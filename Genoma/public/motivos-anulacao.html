@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Motivos de Anulação</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+</head>
+<body class="container py-4">
+  <div class="position-absolute top-0 start-0 m-3">
+    <button class="btn btn-outline-secondary" onclick="window.location.href='menu.html'">← Voltar</button>
+  </div>
+
+  <h1 class="text-center mb-4">Motivos de Anulação</h1>
+
+  <form id="formMotivo" class="mb-4">
+    <input type="hidden" name="idmotivoanulacao" />
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Nome (PT)</label>
+        <input type="text" name="nomept" class="form-control" required />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Nome (EN)</label>
+        <input type="text" name="nomeen" class="form-control" required />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Nome (IT)</label>
+        <input type="text" name="nomeit" class="form-control" required />
+      </div>
+      <div class="col-md-3">
+        <div class="form-check mt-4">
+          <input class="form-check-input" type="checkbox" name="reservadosistema" id="reservadosistema" />
+          <label class="form-check-label" for="reservadosistema">Reservado do sistema</label>
+        </div>
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="reset" class="btn btn-secondary" onclick="form.idmotivoanulacao.value = ''">Limpar</button>
+      </div>
+    </div>
+  </form>
+
+  <h3 class="mb-3">Motivos Existentes</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nome (PT)</th>
+        <th>Nome (EN)</th>
+        <th>Nome (IT)</th>
+        <th>Reservado</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="motivos-tbody"></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('formMotivo');
+    const tbody = document.getElementById('motivos-tbody');
+
+    async function carregarMotivos() {
+      const res = await fetch('/motivos-anulacao');
+      const motivos = await res.json();
+
+      tbody.innerHTML = motivos.map(m => `
+        <tr>
+          <td>${m.nomept}</td>
+          <td>${m.nomeen}</td>
+          <td>${m.nomeit}</td>
+          <td>${m.reservadosistema ? '✔️' : ''}</td>
+          <td>
+            <button class="btn btn-sm btn-warning" onclick='editarMotivo(${JSON.stringify(m).replace(/"/g, '&quot;')})'>Editar</button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarMotivo(${m.idmotivoanulacao})">Eliminar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function editarMotivo(m) {
+      for (const key in m) {
+        if (form.elements[key]) {
+          if (key === 'reservadosistema') {
+            form.elements[key].checked = m[key];
+          } else {
+            form.elements[key].value = m[key];
+          }
+        }
+      }
+    }
+
+    async function eliminarMotivo(id) {
+      if (!confirm('Eliminar motivo?')) return;
+      const res = await fetch(`/motivos-anulacao/${id}`, { method: 'DELETE' });
+      if (res.ok) carregarMotivos();
+    }
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      data.reservadosistema = form.reservadosistema.checked;
+
+      const method = data.idmotivoanulacao ? 'PUT' : 'POST';
+      const url = data.idmotivoanulacao ? `/motivos-anulacao/${data.idmotivoanulacao}` : '/motivos-anulacao';
+
+      if (!data.idmotivoanulacao) delete data.idmotivoanulacao;
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        form.reset();
+        form.idmotivoanulacao.value = '';
+        carregarMotivos();
+      } else {
+        const erro = await res.json();
+        alert('Erro: ' + JSON.stringify(erro));
+      }
+    };
+
+    window.onload = carregarMotivos;
+  </script>
+</body>
+</html>
