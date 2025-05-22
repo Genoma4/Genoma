@@ -16,6 +16,8 @@ import tipokitRoutes from './routes/tipokitRoutes.js';
 import lotesRoutes from './routes/lotesRoutes.js';
 import postosRoutes from './routes/postosRoutes.js';
 import motivosAnulacaoRoutes from './routes/motivosAnulacaoRoutes.js';
+import periodosColheitaRoutes from './routes/periodosColheitaRoutes.js';
+import tiposFertilizacaoRoutes from './routes/tiposFertilizacaoRoutes.js';
 
 dotenv.config()
 
@@ -52,3 +54,5 @@ app.use('/tipokit', tipokitRoutes);
 app.use('/lotes', lotesRoutes);
 app.use('/postos', postosRoutes);
 app.use('/motivos-anulacao', motivosAnulacaoRoutes);
+app.use('/periodos-colheita', periodosColheitaRoutes);
+app.use('/tipos-fertilizacao', tiposFertilizacaoRoutes);
