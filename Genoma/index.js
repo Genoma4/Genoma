@@ -18,6 +18,7 @@ import postosRoutes from './routes/postosRoutes.js';
 import motivosAnulacaoRoutes from './routes/motivosAnulacaoRoutes.js';
 import periodosColheitaRoutes from './routes/periodosColheitaRoutes.js';
 import tiposFertilizacaoRoutes from './routes/tiposFertilizacaoRoutes.js';
+import contactosRoutes from './routes/contactosRoutes.js';
 
 dotenv.config()
 
@@ -56,3 +57,4 @@ app.use('/postos', postosRoutes);
 app.use('/motivos-anulacao', motivosAnulacaoRoutes);
 app.use('/periodos-colheita', periodosColheitaRoutes);
 app.use('/tipos-fertilizacao', tiposFertilizacaoRoutes);
+app.use('/contactos', contactosRoutes);
