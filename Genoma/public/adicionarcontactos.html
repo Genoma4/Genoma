@@ -96,6 +96,11 @@
             <label class="form-label">Peso (kg)</label>
             <input name="peso" type="number" class="form-control">
           </div>
+
+          <div class="col-md-4">
+            <label class="form-label">País</label>
+            <select name="idpais" id="selPais" class="form-select"></select>
+          </div>
         </div>
       </div>
 
@@ -103,7 +108,7 @@
         <div class="row g-3 mt-3">
           <div class="col-md-6">
             <label class="form-label">Dias de Gravidez desde o registo</label>
-            <input name="diasgravidezdaregisto" type="number" class="form-control">
+            <input name="diasgravidezdataregisto" type="number" class="form-control">
           </div>
           <div class="col-md-6 d-flex align-items-end">
             <div class="form-check me-4">
@@ -163,7 +168,7 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">Referência MB</label>
-            <input name="referenciamultibanco" class="form-control">
+            <input name="mbreferencia" class="form-control">
           </div>
           <div class="col-md-6">
             <label class="form-label">Data de Pagamento</label>
@@ -182,8 +187,8 @@
           </div>
           <div class="col-md-4">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="naoenviarmail" id="naoenviarmail">
-              <label class="form-check-label" for="naoenviarmail">Não enviar Email</label>
+              <input class="form-check-input" type="checkbox" name="naoenviaremails" id="naoenviaremails">
+              <label class="form-check-label" for="naoenviaremails">Não enviar Email</label>
             </div>
           </div>
           <div class="col-md-4">
@@ -202,7 +207,6 @@
         </div>
       </div>
       <div class="tab-pane fade" id="anexos" role="tabpanel">
-        <!-- Simulação ou upload de anexos -->
         <p>Gestão de anexos virá aqui.</p>
       </div>
     </div>
@@ -213,13 +217,13 @@
     </div>
   </form>
 
-  <script>
+<script>
 const form = document.getElementById('form');
 const idCont = new URLSearchParams(location.search).get('id');
 
-const intOrNull   = v => v && v !== '' ? parseInt(v, 10) : null;
-const floatOrNull = v => v && v !== '' ? parseFloat(v) : null;
-const dateOrNull  = v => v && v !== '' ? v : null;
+const intOrNull = v => (!v || v === '') ? null : parseInt(v, 10);
+const floatOrNull = v => (!v || v === '') ? null : parseFloat(v);
+const dateOrNull = v => (!v || v === '') ? null : v;
 
 const getJSON = res => res.ok ? res.json() : res.text().then(t => Promise.reject(t));
 
@@ -236,24 +240,58 @@ async function carregarContacto() {
   });
 }
 
+async function carregarCombos() {
+const [paises, postos, periodos, fertilizacoes, medicos] = await Promise.all([
+  fetch('/paises').then(res => res.json()),
+  fetch('/postos').then(res => res.json()),
+  fetch('/periodos-colheita').then(res => res.json()),
+  fetch('/tipos-fertilizacao').then(res => res.json()),
+  fetch('/medicos').then(res => res.json())
+]);
+
+  const selPosto = document.getElementById('selPosto');
+  const selPeriodo = document.getElementById('selPeriodo');
+  const selFert = document.getElementById('selFert');
+  const selMedico = document.getElementById('selMedico');
+
+  const fill = (select, items, valueField, labelField) => {
+    select.innerHTML = '<option value="">Selecione…</option>';
+    items.forEach(item => {
+      select.innerHTML += `<option value="${item[valueField]}">${item[labelField]}</option>`;
+    });
+  };
+
+  fill(document.getElementById('selPais'), paises, 'idpais', 'nomept');
+  fill(selPosto, postos, 'idpostocolheita', 'nome');
+  fill(selPeriodo, periodos, 'idperiodocolheita', 'nomept');
+  fill(selFert, fertilizacoes, 'idtipofertilizacao', 'nomept');
+  fill(selMedico, medicos, 'idmedico', 'nome');
+}
+
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const f = new FormData(form);
   const data = Object.fromEntries(f.entries());
 
   // conversões
-  ['idpais', 'idmedico', 'idpostocolheita', 'idperiodocolheita', 'idtipofertilizacao', 'idmotivoanulacao', 'altura', 'peso']
-    .forEach(k => data[k] = intOrNull(data[k]));
-  ['valorfactura'].forEach(k => data[k] = floatOrNull(data[k]));
+  ['idpais', 'idmedico', 'idpostocolheita', 'idperiodocolheita', 'idtipofertilizacao', 'idmotivoanulacao', 'altura', 'peso',
+  'diasgravidezdataregisto', 'mbentidade', 'mbreferencia', 'iddistrito', 'identidademedico', 'idteste', 'idsistemasaude']
+  .forEach(k => data[k] = intOrNull(data[k]));
+
+  ['altura', 'peso', 'valorfactura']
+    .forEach(k => data[k] = !data[k] ? null : parseFloat(data[k]));
+
   ['datanascimento', 'dataregisto', 'datafactura', 'datapagamento']
-    .forEach(k => data[k] = dateOrNull(data[k]));
+    .forEach(k => data[k] = !data[k] ? null : data[k]);
 
   // checkboxes
-  ['gemelar','quersabersexo','repeticao','naoenviarsms','naoenviarmail','servicoexpresso']
+  ['gemelar','quersabersexo','repeticao','naoenviarsms','naoenviaremails','servicoexpresso']
     .forEach(k => data[k] = form[k]?.checked || false);
 
   const method = idCont ? 'PUT' : 'POST';
   const url = idCont ? `/contactos/${idCont}` : '/contactos';
+
+  console.log('🔍 Payload final JSON:', JSON.stringify(data, null, 2));
 
   const resp = await fetch(url, {
     method,
@@ -270,7 +308,10 @@ form.addEventListener('submit', async e => {
   location.href = 'contactos.html';
 });
 
-carregarContacto();
+(async () => {
+  await carregarCombos();
+  await carregarContacto();
+})();
 </script>
 
 </body>
