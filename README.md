@@ -1,17 +1,3 @@
-O que é o projeto.
-
-Como instalar e correr.
-
-Tecnologias usadas.
-
-Estrutura do código.
-
-Estado atual (incompleto, mas funcional em parte).
-
-Futuras melhorias (se aplicável).
-
-Aqui vai uma versão adaptada ao seu CRM em Node.js + Supabase:
-
 CRM – Genoma 4 All
 
 Este repositório contém o código desenvolvido durante o estágio na Genoma 4 All – Serviços Clínicos, Lda., para a criação de um CRM (Customer Relationship Management) adaptado à gestão clínica.
